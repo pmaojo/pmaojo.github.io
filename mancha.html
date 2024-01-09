@@ -311,6 +311,9 @@ function svgToDataURL(svgStr) {
   a(this).on("touchstart touchmove touchend touchcancel", function (e) {
     var touches = e.changedTouches || e.originalEvent.targetTouches;
     var touch = touches[0];
+    if (!touch) {
+        return; // Exit the function if there is no touch object
+    }
     var eventType = "";
 
     switch (e.type) {
