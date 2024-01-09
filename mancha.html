@@ -325,6 +325,13 @@ function svgToDataURL(svgStr) {
         return;
     }
 
+    var offsetX = 0;
+    var offsetY = 0;
+    if (a(this).offset()) {
+      offsetX = a(this).offset().left;
+      offsetY = a(this).offset().top;
+    }
+
     var mouseEvent = new MouseEvent(eventType, {
       bubbles: true,
       cancelable: true,
@@ -344,7 +351,8 @@ function svgToDataURL(svgStr) {
 
     touch.target.dispatchEvent(mouseEvent);
   });
-    });
+}
+);
 })(jQuery);
 
 $("#promo").wScratchPad({
