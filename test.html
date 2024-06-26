@@ -13,7 +13,9 @@
     <script src="https://cdn.jsdelivr.net/npm/three@0.137.5/build/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.137.5/examples/js/loaders/OBJLoader.js"></script>
     <script>
-        let scene, camera, renderer, model = [];
+        let scene, camera, renderer;
+
+        const colors = [0x3D7CC9, 0x221C35, 0xD21844, 0xE19916];
 
         function init() {
             // Crear la escena
@@ -22,7 +24,7 @@
 
             // Configurar la cámara
             camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            camera.position.z = 5;
+            camera.position.z = 10;
 
             // Configurar el renderizador
             renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -34,17 +36,47 @@
             light.position.set(1, 1, 1).normalize();
             scene.add(light);
 
-            // Cargar el modelo OBJ
+            // Cargar y añadir múltiples modelos OBJ
             const loader = new THREE.OBJLoader();
             loader.load('./oculos.obj', function (obj) {
-                model = obj;
-                scene.add(model);
+                for (let i = 0; i < 5; i++) {
+                    const model = obj.clone();
+                    setModelColor(model, colors[i % colors.length]);
+                    model.position.set(Math.random() * 10 - 5, Math.random() * 10 - 5, Math.random() * -10);
+                    model.scale.setScalar(Math.random() * 0.5 + 0.5);
+                    scene.add(model);
+                }
+                addDecorations();
                 animate();
             });
 
             // Ajustar el tamaño al cambiar el tamaño de la ventana
             window.addEventListener('resize', onWindowResize, false);
             document.addEventListener('mousemove', onMouseMove, false);
+        }
+
+        function setModelColor(model, color) {
+            model.traverse(function (child) {
+                if (child instanceof THREE.Mesh) {
+                    child.material.color.setHex(color);
+                }
+            });
+        }
+
+        function addDecorations() {
+            const geometryCube = new THREE.BoxGeometry(0.5, 0.5, 0.5);
+            const geometrySphere = new THREE.SphereGeometry(0.25, 32, 32);
+
+            for (let i = 0; i < 20; i++) {
+                const material = new THREE.MeshStandardMaterial({ color: colors[Math.floor(Math.random() * colors.length)] });
+                const cube = new THREE.Mesh(geometryCube, material);
+                cube.position.set(Math.random() * 10 - 5, Math.random() * 10 - 5, Math.random() * -10);
+                scene.add(cube);
+                
+                const sphere = new THREE.Mesh(geometrySphere, material);
+                sphere.position.set(Math.random() * 10 - 5, Math.random() * 10 - 5, Math.random() * -10);
+                scene.add(sphere);
+            }
         }
 
         function onWindowResize() {
@@ -54,14 +86,11 @@
         }
 
         function onMouseMove(event) {
-            if (model) {
-                const mouseX = (event.clientX / window.innerWidth) * 2 - 1;
-                const mouseY = (event.clientY / window.innerHeight) * 2 - 1;
-                model.rotation.y = -mouseX * Math.PI;
-                model.rotation.x = mouseY * Math.PI;
-            }
+            const mouseX = (event.clientX / window.innerWidth) * 2 - 1;
+            const mouseY = (event.clientY / window.innerHeight) * 2 - 1;
+            scene.rotation.y = -mouseX * Math.PI * 0.1;
+            scene.rotation.x = mouseY * Math.PI * 0.1;
         }
-
 
         function animate() {
             requestAnimationFrame(animate);
