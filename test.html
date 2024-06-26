@@ -29,17 +29,13 @@
             renderer.setSize(window.innerWidth, window.innerHeight);
             document.body.appendChild(renderer.domElement);
 
-            // Añadir una luz
-            const light = new THREE.DirectionalLight(0xffffff, 1);
-            light.position.set(1, 1, 1).normalize();
-            scene.add(light);
+
 
             // Cargar el modelo OBJ
             const loader = new THREE.OBJLoader();
             loader.load('./oculos.obj', function (obj) {
                 model = obj;
                 scene.add(model);
-                addRays();
                 animate();
             });
 
@@ -67,7 +63,6 @@
 
         function animate() {
             requestAnimationFrame(animate);
-            animateRays();
             renderer.render(scene, camera);
         }
 
