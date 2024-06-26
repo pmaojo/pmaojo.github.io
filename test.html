@@ -13,6 +13,7 @@
     <script src="https://cdn.jsdelivr.net/npm/three@0.137.5/build/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.137.5/examples/js/loaders/OBJLoader.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.137.5/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.137.5/examples/js/loaders/RGBELoader.js"></script>
     <script>
         let scene, camera, renderer, model;
 
@@ -27,6 +28,7 @@
             // Configurar el renderizador
             renderer = new THREE.WebGLRenderer({ antialias: true });
             renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.outputEncoding = THREE.sRGBEncoding;
             document.body.appendChild(renderer.domElement);
 
             // Añadir una luz
@@ -41,43 +43,47 @@
             const ambientLight = new THREE.AmbientLight(0x404040, 1.5);
             scene.add(ambientLight);
 
-            // Cargar el modelo OBJ
-            const loader = new THREE.OBJLoader();
-            loader.load('./processed_input_1719386980.obj', function (obj) {
-                model = obj;
+            // Cargar una textura HDR para el entorno
+            const rgbeLoader = new THREE.RGBELoader();
+            rgbeLoader.setPath('textures/').load('royal_esplanade_1k.hdr', function (texture) {
+                texture.mapping = THREE.EquirectangularReflectionMapping;
+                scene.background = texture;
+                scene.environment = texture;
 
-                // Aplicar material reflectante a los cristales
-                const reflectiveMaterial = new THREE.MeshPhongMaterial({
-                    color: 0x888888,
-                    envMap: scene.background,
-                    reflectivity: 1
-                });
+                // Cargar el modelo OBJ
+                const loader = new THREE.OBJLoader();
+                loader.load('./mnt/data/processed_input_1719386980.obj', function (obj) {
+                    model = obj;
 
-                model.traverse(function (child) {
-                    if (child.isMesh) {
-                        if (child.name.includes('Glass')) { // Asumiendo que los cristales tienen 'Glass' en su nombre
-                            child.material = reflectiveMaterial;
+                    // Aplicar material reflectante a los cristales
+                    const reflectiveMaterial = new THREE.MeshStandardMaterial({
+                        color: 0x888888,
+                        metalness: 1,
+                        roughness: 0,
+                        envMap: texture,
+                        envMapIntensity: 1
+                    });
+
+                    // Aplicar material de neón a la montura
+                    const neonMaterial = new THREE.MeshBasicMaterial({
+                        color: 0x00ffff,
+                        emissive: 0x00ffff,
+                        emissiveIntensity: 1
+                    });
+
+                    model.traverse(function (child) {
+                        if (child.isMesh) {
+                            if (child.name.includes('Glass')) { // Asumiendo que los cristales tienen 'Glass' en su nombre
+                                child.material = reflectiveMaterial;
+                            } else if (child.name.includes('Frame')) { // Asumiendo que la montura tiene 'Frame' en su nombre
+                                child.material = neonMaterial;
+                            }
                         }
-                    }
-                });
+                    });
 
-                // Añadir efectos de neón a la montura
-                const neonMaterial = new THREE.MeshBasicMaterial({
-                    color: 0x00ffff,
-                    emissive: 0x00ffff,
-                    emissiveIntensity: 0.6
+                    scene.add(model);
+                    animate();
                 });
-
-                model.traverse(function (child) {
-                    if (child.isMesh) {
-                        if (child.name.includes('Frame')) { // Asumiendo que la montura tiene 'Frame' en su nombre
-                            child.material = neonMaterial;
-                        }
-                    }
-                });
-
-                scene.add(model);
-                animate();
             });
 
             // Ajustar el tamaño al cambiar el tamaño de la ventana
