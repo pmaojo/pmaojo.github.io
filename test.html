@@ -12,6 +12,7 @@
 <body>
     <script src="https://cdn.jsdelivr.net/npm/three@0.137.5/build/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.137.5/examples/js/loaders/OBJLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.137.5/examples/js/controls/OrbitControls.js"></script>
     <script>
         let scene, camera, renderer, model;
 
@@ -33,32 +34,60 @@
             light.position.set(1, 1, 1).normalize();
             scene.add(light);
 
+            // Añadir controles de órbita
+            const controls = new THREE.OrbitControls(camera, renderer.domElement);
+
+            // Añadir un ambiente de luz
+            const ambientLight = new THREE.AmbientLight(0x404040, 1.5);
+            scene.add(ambientLight);
+
             // Cargar el modelo OBJ
             const loader = new THREE.OBJLoader();
-            loader.load('./oculos.obj', function (obj) {
+            loader.load('./processed_input_1719386980.obj', function (obj) {
                 model = obj;
+
+                // Aplicar material reflectante a los cristales
+                const reflectiveMaterial = new THREE.MeshPhongMaterial({
+                    color: 0x888888,
+                    envMap: scene.background,
+                    reflectivity: 1
+                });
+
+                model.traverse(function (child) {
+                    if (child.isMesh) {
+                        if (child.name.includes('Glass')) { // Asumiendo que los cristales tienen 'Glass' en su nombre
+                            child.material = reflectiveMaterial;
+                        }
+                    }
+                });
+
+                // Añadir efectos de neón a la montura
+                const neonMaterial = new THREE.MeshBasicMaterial({
+                    color: 0x00ffff,
+                    emissive: 0x00ffff,
+                    emissiveIntensity: 0.6
+                });
+
+                model.traverse(function (child) {
+                    if (child.isMesh) {
+                        if (child.name.includes('Frame')) { // Asumiendo que la montura tiene 'Frame' en su nombre
+                            child.material = neonMaterial;
+                        }
+                    }
+                });
+
                 scene.add(model);
                 animate();
             });
 
             // Ajustar el tamaño al cambiar el tamaño de la ventana
             window.addEventListener('resize', onWindowResize, false);
-            document.addEventListener('mousemove', onMouseMove, false);
         }
 
         function onWindowResize() {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
-        }
-
-        function onMouseMove(event) {
-            if (model) {
-                const mouseX = (event.clientX / window.innerWidth) * 2 - 1;
-                const mouseY = (event.clientY / window.innerHeight) * 2 + 1;
-                model.rotation.y = mouseX * Math.PI;
-                model.rotation.x = mouseY * Math.PI;
-            }
         }
 
         function animate() {
