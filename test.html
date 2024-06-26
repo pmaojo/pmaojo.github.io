@@ -13,11 +13,12 @@
     <script src="https://cdn.jsdelivr.net/npm/three@0.137.5/build/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.137.5/examples/js/loaders/OBJLoader.js"></script>
     <script>
-        let scene, camera, renderer, model;
+        let scene, camera, renderer, model, rays = [];
 
         function init() {
             // Crear la escena
             scene = new THREE.Scene();
+            scene.background = new THREE.Color(0xE7E9EB); // Cambiar el fondo
 
             // Configurar la cámara
             camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -38,6 +39,7 @@
             loader.load('./oculos.obj', function (obj) {
                 model = obj;
                 scene.add(model);
+                addRays();
                 animate();
             });
 
@@ -61,8 +63,35 @@
             }
         }
 
+        function addRays() {
+            const rayMaterial = new THREE.LineBasicMaterial({ color: 0xffff00 });
+            const rayGeometry = new THREE.BufferGeometry();
+            const points = [];
+            const radius = 1.5;
+            const segments = 50;
+
+            for (let i = 0; i < segments; i++) {
+                const theta = (i / segments) * 2 * Math.PI;
+                points.push(new THREE.Vector3(Math.cos(theta) * radius, Math.sin(theta) * radius, 0));
+            }
+            points.push(points[0]); // Close the loop
+
+            rayGeometry.setFromPoints(points);
+            const ray = new THREE.Line(rayGeometry, rayMaterial);
+            rays.push(ray);
+            scene.add(ray);
+        }
+
+        function animateRays() {
+            const time = Date.now() * 0.001;
+            rays.forEach((ray, index) => {
+                ray.rotation.z = time * (index % 2 === 0 ? 1 : -1); // Alternate rotation direction
+            });
+        }
+
         function animate() {
             requestAnimationFrame(animate);
+            animateRays();
             renderer.render(scene, camera);
         }
 
@@ -70,4 +99,3 @@
     </script>
 </body>
 </html>
-
