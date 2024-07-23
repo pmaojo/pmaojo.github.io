@@ -38,44 +38,45 @@
         }
 
         function create() {
-            scene = new THREE.Scene();
-            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            renderer = new THREE.WebGLRenderer({ canvas: this.game.canvas, alpha: true });
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.setClearColor(0xEEEEEE); // Configurar el color de fondo
+    scene = new THREE.Scene();
+    camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    renderer = new THREE.WebGLRenderer({ canvas: this.sys.game.canvas, alpha: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setClearColor(0xEEEEEE); // Configurar el color de fondo
 
-            const loader = new THREE.TextureLoader();
-            loader.load(
-                'https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/2294472375_24a3b8ef46_o.jpg',
-                function(texture) {
-                    scene.background = texture;
-                }
-            );
-
-            maze = generateMaze(MAZE_WIDTH, MAZE_HEIGHT);
-            createMaze3D();
-
-            camera.position.set(CELL_SIZE * 1.5, CELL_SIZE * 1.5, CELL_SIZE * 1.5);
-            camera.lookAt(new THREE.Vector3(CELL_SIZE * 2, CELL_SIZE, CELL_SIZE * 2));
-
-            controls = new Phaser.Cameras.Controls.FixedKeyControl({
-                camera: this.cameras.main,
-                left: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A),
-                right: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D),
-                up: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W),
-                down: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S),
-                speed: 0.1
-            });
-
-            const ambientLight = new THREE.AmbientLight(0x404040);
-            scene.add(ambientLight);
-
-            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
-            directionalLight.position.set(1, 1, 1);
-            scene.add(directionalLight);
-
-            window.addEventListener('resize', onWindowResize, false);
+    const loader = new THREE.TextureLoader();
+    loader.load(
+        'https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/2294472375_24a3b8ef46_o.jpg',
+        function(texture) {
+            scene.background = texture;
         }
+    );
+
+    maze = generateMaze(MAZE_WIDTH, MAZE_HEIGHT);
+    createMaze3D();
+
+    camera.position.set(CELL_SIZE * 1.5, CELL_SIZE * 1.5, CELL_SIZE * 1.5);
+    camera.lookAt(new THREE.Vector3(CELL_SIZE * 2, CELL_SIZE, CELL_SIZE * 2));
+
+    controls = new Phaser.Cameras.Controls.FixedKeyControl({
+        camera: this.cameras.main,
+        left: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A),
+        right: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D),
+        up: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W),
+        down: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S),
+        speed: 0.1
+    });
+
+    const ambientLight = new THREE.AmbientLight(0x404040);
+    scene.add(ambientLight);
+
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
+    directionalLight.position.set(1, 1, 1);
+    scene.add(directionalLight);
+
+    window.addEventListener('resize', onWindowResize, false);
+    this.scale.on('resize', onWindowResize, this);
+}
 
         function update(time, delta) {
             controls.update(delta);
