@@ -38,27 +38,23 @@
         }
 
         function create() {
-            // Set up Three.js scene
             scene = new THREE.Scene();
             camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            renderer = new THREE.WebGLRenderer({ canvas: this.game.canvas });
+            renderer = new THREE.WebGLRenderer({ canvas: this.game.canvas, alpha: true });
             renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setClearColor(0xEEEEEE); // Configurar el color de fondo
 
-            // Add skybox
             const loader = new THREE.TextureLoader();
             loader.load('https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/2294472375_24a3b8ef46_o.jpg', function(texture) {
                 scene.background = texture;
             });
 
-            // Generate and create maze
             maze = generateMaze(MAZE_WIDTH, MAZE_HEIGHT);
             createMaze3D();
 
-            // Set up camera and controls
             camera.position.set(CELL_SIZE * 1.5, CELL_SIZE * 1.5, CELL_SIZE * 1.5);
             camera.lookAt(new THREE.Vector3(CELL_SIZE * 2, CELL_SIZE, CELL_SIZE * 2));
 
-            // Set up controls
             controls = new Phaser.Cameras.Controls.FixedKeyControl({
                 camera: this.cameras.main,
                 left: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A),
@@ -68,14 +64,19 @@
                 speed: 0.1
             });
 
-            // Handle window resize
+            const ambientLight = new THREE.AmbientLight(0x404040);
+            scene.add(ambientLight);
+
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
+            directionalLight.position.set(1, 1, 1);
+            scene.add(directionalLight);
+
             window.addEventListener('resize', onWindowResize, false);
         }
 
         function update(time, delta) {
             controls.update(delta);
 
-            // Update camera position based on controls
             const speed = 0.05;
             if (controls.left.isDown) {
                 camera.position.x -= speed;
@@ -90,7 +91,6 @@
                 camera.position.z += speed;
             }
 
-            // Render the Three.js scene
             renderer.render(scene, camera);
         }
 
@@ -134,21 +134,12 @@
                 }
             }
 
-            // Add floor
             const floorGeometry = new THREE.PlaneGeometry(MAZE_WIDTH * CELL_SIZE, MAZE_HEIGHT * CELL_SIZE);
             const floorMaterial = new THREE.MeshPhongMaterial({ color: 0x666666, side: THREE.DoubleSide });
             const floor = new THREE.Mesh(floorGeometry, floorMaterial);
             floor.rotation.x = Math.PI / 2;
             floor.position.set((MAZE_WIDTH * CELL_SIZE) / 2 - CELL_SIZE / 2, 0, (MAZE_HEIGHT * CELL_SIZE) / 2 - CELL_SIZE / 2);
             scene.add(floor);
-
-            // Add lighting
-            const ambientLight = new THREE.AmbientLight(0x404040);
-            scene.add(ambientLight);
-
-            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
-            directionalLight.position.set(1, 1, 1);
-            scene.add(directionalLight);
         }
 
         function onWindowResize() {
