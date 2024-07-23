@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>3D Maze Game with Three.js</title>
+  <style>
+    body { margin: 0; overflow: hidden; }
+    canvas { display: block; }
+  </style>
+</head>
+<body>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script>
+    const config = {
+      canvas: document.createElement('canvas'),
+    };
+    const canvas = config.canvas;
+    document.body.appendChild(canvas);
+
+    const MAZE_WIDTH = 20;
+    const MAZE_HEIGHT = 20;
+    const CELL_SIZE = 1;
+
+    let scene, camera, renderer, controls, maze;
+
+    function generateMaze(width, height) {
+      const maze = Array(height).fill().map(() => Array(width).fill(1));
+      const stack = [{ x: 1, y: 1 }];
+      maze[1][1] = 0;
+
+      while (stack.length > 0) {
+        const current = stack.pop();
+        const neighbors = [
+          { x: current.x + 2, y: current.y, direction: { x: 1, y: 0 } },
+          { x: current.x - 2, y: current.y, direction: { x: -1, y: 0 } },
+          { x: current.x, y: current.y + 2, direction: { x: 0, y: 1 } },
+          { x: current.x, y: current.y - 2, direction: { x: 0, y: -1 } },
+        ].filter((n) => n.x > 0 && n.x < width && n.y > 0 && n.y < height && maze[n.y][n.x] === 1);
+
+        if (neighbors.length > 0) {
+          stack.push(current);
+          const next = neighbors[Math.floor(Math.random() * neighbors.length)];
+          maze[next.y][next.x] = 0;
+          maze[current.y + next.direction.y][current.x + next.direction.x] = 0;
+          stack.push(next);
+        }
+      }
+
+      return maze;
+    }
+
+    function createMaze3D(maze) {
+      const wallGeometry = new THREE.BoxGeometry(CELL_SIZE, CELL_SIZE, CELL_SIZE);
+      const wallMaterial = new THREE.MeshPhongMaterial({ color: 0x8888ff });
+
+      for (let y = 0; y < MAZE_HEIGHT; y++) {
+        for (let x = 0; x < MAZE_WIDTH; x++) {
+          if (maze[y][x] === 1) {
+            const wall = new THREE.Mesh(wallGeometry, wallMaterial);
+            wall.position.set(x * CELL_SIZE, CELL_SIZE / 2, y * CELL_SIZE);
+            scene.add(wall);
+          }
+        }
+      }
+
+      const floorGeometry = new THREE.PlaneGeometry(MAZE_WIDTH * CELL_SIZE, MAZE_HEIGHT * CELL_SIZE);
+      const floorMaterial = new THREE.MeshPhongMaterial({ color: 0x666666, side: THREE.DoubleSide });
+      const floor = new THREE.Mesh(floorGeometry, floorMaterial);
+      floor.rotation.x = Math.PI / 2;
+      floor.position.set((MAZE_WIDTH * CELL_SIZE) / 2 - CELL_SIZE / 2, 0, (MAZE_HEIGHT * CELL_SIZE) / 2 - CELL_SIZE / 2);
+      scene.add(floor);
+    }
+
+    function init() {
+      scene = new THREE.Scene();
+      camera = new THREE.PerspectiveCamera(75, canvas.width / canvas.height, 0.1, 1000);
+      renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+      renderer.setSize(canvas.width, canvas.height);
+
+      controls = new THREE.OrbitControls(camera, canvas);
+
+      const loader = new THREE.TextureLoader();
+      loader.load('https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/2294472375_24a3b8ef46_o.jpg', (texture) => {
+        scene.background = texture;
+      });
+
+      maze = generateMaze(MAZE_WIDTH, MAZE_HEIGHT);
+      createMaze3D(maze);
+
+      camera.position.set(CELL_SIZE * 1.5, CELL_SIZE * 1.5, CELL_SIZE * 1.5);
+      camera.lookAt(new THREE.Vector3(CELL_SIZE * 2, CELL_SIZE, CELL_SIZE * 2));
+
+      const ambientLight = new THREE.AmbientLight(0x404040);
+      const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
+      directionalLight.position.set(1, 1, 1);
+      scene.add(ambientLight, directionalLight);
+
+      window.addEventListener('resize', () => {
+        camera.aspect = canvas.width / canvas.height;
+        camera.updateProjectionMatrix();
+        renderer.setSize(canvas.width, canvas.height);
+      });
+
+      animate();
+    }
+
+    function animate() {
+      requestAnimationFrame(animate);
+      controls.update();
+      renderer.render(scene, camera);
+    }
+
+    init();
+  </script>
+</body>
+</html>
