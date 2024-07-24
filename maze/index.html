@@ -3,20 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D Maze Game with Phaser and Three.js</title>
+    <title>Phaser Maze Game</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/phaser/3.55.2/phaser.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
-        body { margin: 0; overflow: hidden; }
-        canvas { display: block; }
+        body { margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; background: #333; }
     </style>
 </head>
 <body>
     <script>
         const config = {
-            type: Phaser.WEBGL,
-            width: window.innerWidth,
-            height: window.innerHeight,
+            type: Phaser.AUTO,
+            width: 800,
+            height: 600,
+            physics: {
+                default: 'arcade',
+                arcade: {
+                    gravity: { y: 0 },
+                    debug: false
+                }
+            },
             scene: {
                 preload: preload,
                 create: create,
@@ -25,77 +30,68 @@
         };
 
         const game = new Phaser.Game(config);
-        let controls;
-        let scene, camera, renderer;
-        let maze;
+        let player;
+        let cursors;
+        let walls;
 
         const MAZE_WIDTH = 20;
-        const MAZE_HEIGHT = 20;
-        const CELL_SIZE = 1;
+        const MAZE_HEIGHT = 15;
+        const CELL_SIZE = 40;
 
         function preload() {
-            this.load.image('sky', 'https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/2294472375_24a3b8ef46_o.jpg');
+            this.load.image('wall', 'https://opengameart.org/sites/default/files/Wall_32x32.png');
+            this.load.image('player', 'https://opengameart.org/sites/default/files/styles/medium/public/ball.png');
         }
 
         function create() {
-    scene = new THREE.Scene();
-    camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    renderer = new THREE.WebGLRenderer({ canvas: this.sys.game.canvas, alpha: true });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setClearColor(0xEEEEEE); // Configurar el color de fondo
+            walls = this.physics.add.staticGroup();
 
-    const loader = new THREE.TextureLoader();
-    loader.load(
-        'https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/2294472375_24a3b8ef46_o.jpg',
-        function(texture) {
-            scene.background = texture;
+            const maze = generateMaze(MAZE_WIDTH, MAZE_HEIGHT);
+            for (let y = 0; y < MAZE_HEIGHT; y++) {
+                for (let x = 0; x < MAZE_WIDTH; x++) {
+                    if (maze[y][x] === 1) {
+                        walls.create(x * CELL_SIZE + CELL_SIZE / 2, y * CELL_SIZE + CELL_SIZE / 2, 'wall')
+                            .setScale(CELL_SIZE / 32)
+                            .refreshBody();
+                    }
+                }
+            }
+
+            player = this.physics.add.sprite(CELL_SIZE + CELL_SIZE / 2, CELL_SIZE + CELL_SIZE / 2, 'player')
+                .setScale(CELL_SIZE / 64);
+            player.setCollideWorldBounds(true);
+
+            this.physics.add.collider(player, walls);
+
+            cursors = this.input.keyboard.createCursorKeys();
+
+            // Camera follow player
+            this.cameras.main.setBounds(0, 0, MAZE_WIDTH * CELL_SIZE, MAZE_HEIGHT * CELL_SIZE);
+            this.cameras.main.startFollow(player, true, 0.08, 0.08);
+
+            // Add some depth to the walls
+            walls.children.entries.forEach(wall => {
+                wall.setDepth(wall.y);
+            });
         }
-    );
 
-    maze = generateMaze(MAZE_WIDTH, MAZE_HEIGHT);
-    createMaze3D();
+        function update() {
+            player.setVelocity(0);
 
-    camera.position.set(CELL_SIZE * 1.5, CELL_SIZE * 1.5, CELL_SIZE * 1.5);
-    camera.lookAt(new THREE.Vector3(CELL_SIZE * 2, CELL_SIZE, CELL_SIZE * 2));
-
-    controls = new Phaser.Cameras.Controls.FixedKeyControl({
-        camera: this.cameras.main,
-        left: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A),
-        right: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D),
-        up: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W),
-        down: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S),
-        speed: 0.1
-    });
-
-    const ambientLight = new THREE.AmbientLight(0x404040);
-    scene.add(ambientLight);
-
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
-    directionalLight.position.set(1, 1, 1);
-    scene.add(directionalLight);
-
-    window.addEventListener('resize', onWindowResize, false);
-    this.scale.on('resize', onWindowResize, this);
-}
-
-        function update(time, delta) {
-            controls.update(delta);
-
-            const speed = 0.05;
-            if (controls.left.isDown) {
-                camera.position.x -= speed;
-            }
-            if (controls.right.isDown) {
-                camera.position.x += speed;
-            }
-            if (controls.up.isDown) {
-                camera.position.z -= speed;
-            }
-            if (controls.down.isDown) {
-                camera.position.z += speed;
+            if (cursors.left.isDown) {
+                player.setVelocityX(-160);
+            } else if (cursors.right.isDown) {
+                player.setVelocityX(160);
             }
 
-            renderer.render(scene, camera);
+            if (cursors.up.isDown) {
+                player.setVelocityY(-160);
+            } else if (cursors.down.isDown) {
+                player.setVelocityY(160);
+            }
+
+            // Update player depth to create a pseudo-3D effect
+            player.setDepth(player.y + 1);
         }
 
         function generateMaze(width, height) {
@@ -122,34 +118,6 @@
             }
 
             return maze;
-        }
-
-        function createMaze3D() {
-            const wallGeometry = new THREE.BoxGeometry(CELL_SIZE, CELL_SIZE, CELL_SIZE);
-            const wallMaterial = new THREE.MeshPhongMaterial({ color: 0x8888ff });
-
-            for (let y = 0; y < MAZE_HEIGHT; y++) {
-                for (let x = 0; x < MAZE_WIDTH; x++) {
-                    if (maze[y][x] === 1) {
-                        const wall = new THREE.Mesh(wallGeometry, wallMaterial);
-                        wall.position.set(x * CELL_SIZE, CELL_SIZE / 2, y * CELL_SIZE);
-                        scene.add(wall);
-                    }
-                }
-            }
-
-            const floorGeometry = new THREE.PlaneGeometry(MAZE_WIDTH * CELL_SIZE, MAZE_HEIGHT * CELL_SIZE);
-            const floorMaterial = new THREE.MeshPhongMaterial({ color: 0x666666, side: THREE.DoubleSide });
-            const floor = new THREE.Mesh(floorGeometry, floorMaterial);
-            floor.rotation.x = Math.PI / 2;
-            floor.position.set((MAZE_WIDTH * CELL_SIZE) / 2 - CELL_SIZE / 2, 0, (MAZE_HEIGHT * CELL_SIZE) / 2 - CELL_SIZE / 2);
-            scene.add(floor);
-        }
-
-        function onWindowResize() {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
         }
     </script>
 </body>
