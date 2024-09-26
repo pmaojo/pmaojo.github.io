@@ -1,0 +1,345 @@
+/**
+ * Demo Styles
+ */
+html {
+  box-sizing: border-box;
+}
+*,
+*:before,
+*:after {
+  box-sizing: inherit;
+}
+
+body {
+  font-size: 16px;
+  font-family: "Open Sans", Helvetica, arial, sans-serif!important;
+  line-height: 1.5;
+}
+
+.wrapper {
+  position: relative;
+  display:block;
+ overflow:auto;
+}
+.wide{display:none}
+@media screen and (min-width: 600px) {
+  .grid-overlay {
+    position: absolute;
+    display: block;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+  }
+
+  .grid-overlay .row,
+  .grid-overlay [class^="col-"],
+  .grid-overlay [class*=" col-"],
+  .grid-overlay .well {
+    height: 100%;
+  }
+
+  .grid-overlay .well {
+    background-color: #eff6fc;
+  }
+}
+
+.example {
+  font-size: 11px;
+}
+
+.example .row .well {
+  background-color: hsla(0, 0%, 92%, 0.6);
+  text-align: center;
+  padding: 12px 0;
+  border: 1px solid #ccc;
+}
+
+.example .row .row .well {
+  background-color: hsla(0, 0%, 87%, 0.6);
+    max-width: 100%;
+}
+.fonder{background-image: url('http://pulpomarketing.com/sportzone/img/fondo.png')}
+/**
+ * Fluid grid system
+ */
+
+/* 100% width container */
+.container {
+    display: block;
+    position: relative;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  list-style: none;
+    vertical-align: middle
+}
+
+/* Give `.wrapper` a maximum width and center it within its parent*/
+.wrapper {
+  margin: 0 auto;
+  width: 100%;
+  z-index: 1;
+}
+    .notwide{display:block}
+    .wide iframe{display:none}
+/* Don’t honor column widths until viewport is at least 600px wide */
+@media (min-width: 600px) {
+
+  .row {
+  }
+
+  [class^="col-"],
+  [class*=" col-"]{
+    position: relative;
+    float: left;
+    padding-right: 1.333%;
+    padding-left: 1.333%;
+    min-height: 1px;
+    width: 100%;
+  }
+
+  /* Remove space between `.col-*` elements with `.no-gutter` class */
+  .row.no-gutter {
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  .row.no-gutter [class^="col-"] {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  /* Column widths */
+  .col-1  { width: 8.333%;  }
+  .col-2  { width: 16.666%; }
+  .col-3  { width: 25%;     }
+  .col-4  { width: 33.333%; }
+  .col-5  { width: 41.666%; }
+  .col-6  { width: 50%;     }
+  .col-7  { width: 58.333%; }
+  .col-8  { width: 66.666%; }
+  .col-9  { width: 75%;     }
+  .col-10 { width: 83.333%; }
+  .col-11 { width: 91.666%; }
+  .col-12 { width: 100%;    }
+
+  /* Push & pull */
+  .push-1  { left: 8.333%;  }
+  .push-2  { left: 16.666%; }
+  .push-3  { left: 25%;     }
+  .push-4  { left: 33.333%; }
+  .push-5  { left: 41.666%; }
+  .push-6  { left: 50%;     }
+  .push-7  { left: 58.333%; }
+  .push-8  { left: 66.666%; }
+  .push-9  { left: 75%;     }
+  .push-10 { left: 83.333%; }
+  .push-11 { left: 91.666%; }
+  .push-12 { left: 100%;    }
+
+  .pull-1  { right: 8.333%;  }
+  .pull-2  { right: 16.666%; }
+  .pull-3  { right: 25%;     }
+  .pull-4  { right: 33.333%; }
+  .pull-5  { right: 41.666%; }
+  .pull-6  { right: 50%;     }
+  .pull-7  { right: 58.333%; }
+  .pull-8  { right: 66.666%; }
+  .pull-9  { right: 75%;     }
+  .pull-10 { right: 83.333%; }
+  .pull-11 { right: 91.666%; }
+  .pull-12 { right: 100%;    }
+}
+
+/* Clear floats */
+.container:before,
+.container:after,
+.wrapper:before,
+.wrapper:after,
+.row:before,
+.row:after {
+  display: table;
+  content: " ";
+}
+
+.container:after,
+.wrapper:after,
+.row:after {
+  clear: both;
+}
+
+#facebooklogin{z-index: 99999999999;margin: auto}
+#juegonavidad {
+    text-align: center;
+    background-color: rgb(0, 21, 39);
+    display:block;
+    overflow:auto;
+
+}
+.c1, .c2, .c3 {display: inline-block;position: relative;}
+.fondo{ background-image: url('/sportzone/img/fondito.jpg');text-align: center;height: 100%;position: relative}
+.c2{background: black;text-align: center;height: 400px}
+.c3{background: black;text-align: right;height: 400px}
+/* Smartphones (portrait and landscape) ----------- */
+@media only screen
+and (min-width : 320px)
+and (max-width : 480px) {
+    .c1, .c2, .c3 {width:100%;text-align: center}
+/* Styles */
+}
+ 
+/* Smartphones (landscape) ----------- */
+@media only screen
+and (min-width : 321px) {
+    .c1, .c2, .c3 {width:100%;text-align: center}
+}
+ 
+/* Smartphones (portrait) ----------- */
+@media only screen
+and (max-width : 320px) {
+    .c1, .c2, .c3 {width:100%;text-align: center}
+    
+}@media only screen
+and (min-width : 376px) {
+     .notwide{display:none}
+    .wide iframe{display:block}
+    .wide{display:block}
+}
+
+
+/* iPads (portrait and landscape) ----------- */
+@media only screen
+and (min-width : 768px)
+and (max-width : 1024px) {
+   .c1 {width:28%}
+    .c2 {width:38%}
+    .c3 {width:28%}}
+ 
+/* iPads (landscape) ----------- */
+@media only screen
+and (min-width : 768px)
+and (max-width : 1024px)
+and (orientation : landscape) {
+   .c1 {width:28%}
+    .c2 {width:38%}
+    .c3 {width:28%}}
+ 
+/* iPads (portrait) ----------- */
+@media only screen
+and (min-width : 768px)
+and (max-width : 1024px)
+and (orientation : portrait) {
+   .c1 {width:28%}
+    .c2 {width:38%}
+    .c3 {width:28%}}
+ 
+/* Desktops and laptops ----------- */
+@media only screen
+and (min-width : 1224px) {
+   .c1 {width:28%}
+    .c2 {width:38%}
+    .c3 {width:28%}}
+}
+ 
+/* Large screens ----------- */
+@media only screen
+and (min-width : 1824px) {
+/* Styles */
+}
+ 
+/* iPhone 4 ----------- */
+@media
+only screen and (-webkit-min-device-pixel-ratio : 1.5),
+only screen and (min-device-pixel-ratio : 1.5) {
+    .c1, .c2, .c3 {width:100%}
+}
+#feis button{background:white;color:orange;border:none;border-radius:6px;padding:10px;box-shadow: 0 0 10px black;transition: 0.3s all;margin:auto}
+#feis button:hover{color:black;}
+
+#feis button:before {   content:  "\25BA  ";color:black}
+
+#myModal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    padding: 0px; /* Location of the box */
+    left: 0;
+    top: 0;
+    width: 100%!important; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+#myModal iframe{border: none;width:100%}
+
+/* Modal Content */
+.modal-content {
+    background-color: #fefefe;
+    margin: auto;
+    padding: 20px;
+    border: 3px solid black;
+    width: 100%;
+    max-width: 528px;
+    height: auto;
+}
+
+/* The Close Button */
+.close {
+    color: #aaaaaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/* Modal Header */
+.modal-header {
+    text-align: right;
+    padding: 10px;
+    background: black;
+    color: white!important;
+    height: 34px
+}
+
+/* Modal Body */
+
+/* Modal Footer */
+.modal-footer {
+    padding: 2px 16px;
+    color: white;
+}
+
+/* Modal Content */
+.modal-content {
+    position: relative;
+    background-color: #fefefe;
+    margin: auto;
+    padding: 0;
+    border: 1px solid #888;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+    -webkit-animation-name: animatetop;
+    -webkit-animation-duration: 0.4s;
+    animation-name: animatetop;
+    animation-duration: 0.4s;
+    height: 345px;
+}
+
+/* Add Animation */
+@-webkit-keyframes animatetop {
+    from {top: -300px; opacity: 0} 
+    to {top: 0; opacity: 1}
+}
+
+@keyframes animatetop {
+    from {top: -300px; opacity: 0}
+    to {top: 0; opacity: 1}
+}
