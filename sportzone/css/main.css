@@ -44,7 +44,7 @@
   background-color: hsla(0, 0%, 87%, 0.6);
     max-width: 100%;
 }
-.fonder{background-image: url('https://pulpomarketing.com/sportzone/img/fondo.png')}
+.fonder{background-image: url('../img/fondo.png')}
 #juegonavidad .container {
     display: block;
     position: relative;
@@ -234,12 +234,12 @@ only screen and (-webkit-min-device-pixel-ratio : 1.5),
 only screen and (min-device-pixel-ratio : 1.5) {
     .c1, .c2, .c3 {width:100%}
 }
-#feis button{background:white;color:orange;border:none;border-radius:6px;padding:10px;box-shadow: 0 0 10px black;transition: 0.3s all;margin:auto}
-#feis button:hover{color:black;}
 
-#feis button:before {   content:  "\25BA  ";color:black}
 
-#myModal {
+
+
+
+.modal {
     position: fixed; /* Stay in place */
     z-index: 1; /* Sit on top */
     padding: 0px; /* Location of the box */
@@ -252,7 +252,7 @@ only screen and (min-device-pixel-ratio : 1.5) {
     background-color: rgba(0,0,0,0.4);
     z-index: 9999; /* Black w/ opacity */
 }
-#myModal iframe{border: none;width:100%}
+.modal iframe{border: none;width:100%}
 
 /* Modal Content */
 .modal-content {
@@ -326,7 +326,10 @@ only screen and (min-device-pixel-ratio : 1.5) {
 
 	background: none;
 	font-family: Androgyne;
-	background-image: url('https://www.wearewebstars.dk/codepen/img//s2.png'), url('https://www.wearewebstars.dk/codepen/img//s3.png');
+	background-image: radial-gradient(circle at 20% 20%, rgba(255,255,255,0.7) 0, rgba(255,255,255,0) 60%),
+            radial-gradient(circle at 80% 30%, rgba(255,255,255,0.5) 0, rgba(255,255,255,0) 55%);
+        background-repeat: repeat;
+        background-size: 400px 400px;
 	height: 100%;
 	left: 0;
 	position: absolute;
@@ -366,4 +369,115 @@ only screen and (min-device-pixel-ratio : 1.5) {
 .close {
     margin-top: -9px !important;
     color: #fff !important;
+}
+[hidden] {
+  display: none !important;
+}
+
+.modal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.modal[hidden] {
+  display: none !important;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.modal-button {
+  background: transparent;
+  border: 1px solid #ffffff;
+  border-radius: 4px;
+  color: #ffffff;
+  cursor: pointer;
+  font: inherit;
+  padding: 0.25rem 0.75rem;
+}
+
+.modal-button:focus,
+.modal-button:hover {
+  outline: 2px solid #ffffff;
+  outline-offset: 2px;
+}
+
+.modal-title {
+  font-size: 1.25rem;
+  margin: 0;
+}
+
+.modal-body {
+  padding: 1rem;
+}
+
+.hero-panel,
+.central-panel,
+.companion-panel {
+  text-align: center;
+}
+
+.hero-panel {
+  padding-top: 3%;
+}
+
+.hero-panel__logo,
+.central-panel__hero,
+.companion-panel__mascot,
+.instructions__image,
+.game-loading__image {
+  max-width: 100%;
+  height: auto;
+}
+
+.central-panel {
+  padding-top: 2%;
+  color: #ffffff;
+}
+
+.companion-panel {
+  padding-top: 6%;
+}
+
+.game-launcher {
+  padding: 10px;
+}
+
+.game-loading {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  min-height: 300px;
+}
+
+.noscript-message {
+  background: #000000;
+  color: #ffffff;
+  margin: 0;
+  padding: 1rem;
+  text-align: center;
+}
+
+.orientation-message {
+  margin: 0.5rem 0;
+}
+
+#game {
+  outline: none;
+}
+
+#game:focus {
+  outline: 3px solid #ffffff;
+  outline-offset: 4px;
+}
+.modal-button.close {
+  border: none;
+  font-size: 1.75rem;
+  line-height: 1;
+  padding: 0 0.5rem;
 }
